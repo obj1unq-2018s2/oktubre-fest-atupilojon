@@ -1,0 +1,82 @@
+
+import carpas.*
+import marcas.*
+import personas.*
+
+describe "Test enunciado"{
+	
+	var quilmes = new CervezaRubia()
+	var negraModelo = new CervezaNegra(gramosLupuloPorLitro = 8, paisProcedencia = "Mexico")
+	var patagonia = new CervezaRoja()
+	
+	var jarra1 = new Jarra(capacidad = 0.5, marcaCerveza = quilmes)
+	var jarra2 = new Jarra(capacidad = 0.2, marcaCerveza = negraModelo)
+	
+	var pedro = new Persona (peso = 85, aguante = 200, gustaBanda = false, marcaPreferida = quilmes)
+	var jurgen = new Aleman (peso = 75, aguante = 350, gustaBanda = true,
+			marcaPreferida = quilmes)
+	
+	var carpa1 = new CarpaCervecera(capacidad = 50, tieneBanda = true, marcaCerveza = quilmes)
+	
+	test "jarra1 tiene un contenido de 0.5" {
+		
+		assert.equals(jarra1.capacidad(), 0.5)
+
+	}
+	
+	test "pedro toma jarra2 de cerveza negra de 200 de capacidad y la
+			graduacion ingerida es de 30 (15% * 200)" {
+				
+		graduacionReglamentaria.valorMaximoCervezaNegra(15)
+		pedro.beberJarra(jarra2)
+		
+		assert.equals(pedro.alcoholIngerido(), 3)			
+				
+	}
+	
+	test "pedro toma jarra2 de cerveza negra de 200 de capacidad y 15% de graduacion
+			y esta ebrio (80*30 > 200)" {
+			
+		graduacionReglamentaria.valorMaximoCervezaNegra(15)
+		pedro.beberJarra(jarra2)
+		
+		assert.that(pedro.estaEbria())
+		
+	}
+	
+	test "pedro evalua si le gustaría entrar a carpa1 y no le gusta porque no hay banda" {
+		
+		assert.notThat(pedro.leGustariaEntrar(carpa1))
+		
+	}
+	
+	test "jurgen evalua entrar a carpa1 que pasa musica y vende la marca que le gusta
+			pero hay clientes pares (esta pedro)" {
+		
+		carpa1.ingresar(pedro)
+		assert.notThat(jurgen.leGustariaEntrar(carpa1))
+				
+	}
+	
+	test "pedro esta ebrio y no puede entrar en carpa1"{
+		
+		graduacionReglamentaria.valorMaximoCervezaNegra(15)
+		pedro.beberJarra(jarra2)
+		
+		assert.notThat(carpa1.permiteIngreso(pedro))
+	}
+
+	test "jurgen esta ebrio, le gustaria entrar en carpa 1 pero no entra porque esta ebrio" {
+		
+		graduacionReglamentaria.valorMaximoCervezaNegra(15)
+		//pedro.beberJarra(jarra2)
+		jurgen.beberJarra(jarra2)
+		jurgen.beberJarra(jarra2)
+		
+		assert.throwsExceptionWithMessage("No puede entrar", ({pedro.ingresar(carpa1)}))
+		//jurgen.ingresar(carpa1)
+		//assert.that(carpa1.clientes().contains(jurgen))
+		
+	}
+	
+}
